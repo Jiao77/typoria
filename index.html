@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: file: studio-theme:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' studio-theme:; img-src 'self' data: blob: file: studio-theme: https: http:; font-src 'self' data: file: studio-theme:; worker-src 'self' blob:; connect-src 'self' data: blob: https: http:;" />
+<title>Typora Studio</title>
+<link rel="icon" href="assets/icon.png" />
+<link rel="stylesheet" href="styles.css?v=24" id="app-styles" />
+<link rel="stylesheet" href="vendor/katex/katex.min.css" id="katex-styles" />
+</head>
+<body data-theme="studio-light" data-shell="light">
+  <!-- 无边框一体化标题栏：左侧留出 macOS 红绿灯，中央显示文档名，右侧为操作区 -->
+  <header class="titlebar">
+    <div class="titlebar-spacer"></div>
+    <div class="titlebar-center">
+      <span id="doc-title" class="doc-title">未命名.md</span>
+      <span id="dirty-dot" class="dirty-dot" title="有未保存的更改"></span>
+      <span id="doc-state" class="doc-state"></span>
+    </div>
+    <div class="titlebar-actions">
+      <button id="btn-search" class="icon-button" type="button" title="查找（⌘F）" aria-label="查找">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.6" cy="8.6" r="5.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.8 12.8 16.7 16.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btn-source" class="icon-button" type="button" title="源码模式（⌘/）" aria-label="源码模式">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.4 5.7 3.1 10l4.3 4.3M12.6 5.7 16.9 10l-4.3 4.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button id="btn-settings" class="icon-button" type="button" title="偏好设置" aria-label="偏好设置">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8.6 2.5h2.8l.34 1.8 1.2.5 1.55-1.05 2 2-1.05 1.55.5 1.2 1.8.34v2.8l-1.8.34-.5 1.2 1.05 1.55-2 2-1.55-1.05-1.2.5-.34 1.8H8.6l-.34-1.8-1.2-.5-1.55 1.05-2-2 1.05-1.55-.5-1.2-1.8-.34V8.6l1.8-.34.5-1.2L3.51 5.5l2-2 1.55 1.05 1.2-.5z" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/><circle cx="10" cy="10" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      </button>
+      <button id="btn-sidebar" class="icon-button" type="button" title="侧边栏" aria-label="侧边栏">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.6 3.5v13" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <aside id="sidebar" class="sidebar" aria-label="侧边栏">
+      <div class="sidebar-head">
+        <span class="brand">Typora Studio</span>
+        <button id="btn-sidebar-close" class="sidebar-close" type="button" title="收起侧边栏" aria-label="收起侧边栏">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 5.5 14.5 14.5M14.5 5.5 5.5 14.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="sidebar-tabs" role="tablist">
+        <button class="sidebar-tab is-active" data-panel="outline" role="tab" type="button">大纲</button>
+        <button class="sidebar-tab" data-panel="files" role="tab" type="button">文件</button>
+      </div>
+      <div class="sidebar-panel is-active" data-panel="outline">
+        <nav id="outline" class="outline" aria-label="文档大纲"></nav>
+      </div>
+      <div class="sidebar-panel" data-panel="files">
+        <div class="file-actions">
+          <button id="btn-new" class="text-button" type="button">新建</button>
+          <button id="btn-open" class="text-button" type="button">打开</button>
+          <button id="btn-save-as" class="text-button" type="button">另存为</button>
+        </div>
+        <div id="recent" class="recent-list"></div>
+      </div>
+      <div class="sidebar-foot">
+        <span id="side-file">未命名.md</span>
+      </div>
+    </aside>
+
+    <main id="editor-scroll" class="workspace">
+      <div id="write" class="write">
+        <div id="editor" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="Markdown 编辑器"></div>
+        <textarea id="source" spellcheck="false" aria-label="Markdown 源码" hidden></textarea>
+      </div>
+    </main>
+  </div>
+
+  <footer id="statusbar" class="statusbar">
+    <div class="status-left">
+      <span id="status" class="status-text"></span>
+      <span id="word-count" class="status-meta">0 字</span>
+      <span id="save-state" class="status-meta">已保存</span>
+    </div>
+    <div class="status-right">
+      <button id="btn-image" class="status-button" type="button" title="插入图片">图片</button>
+      <button id="btn-export" class="status-button" type="button" title="导出文档" aria-haspopup="menu">导出</button>
+      <button id="btn-theme" class="status-button" type="button" title="切换主题" aria-haspopup="listbox">主题</button>
+      <input id="upload-images" type="file" accept="image/*" multiple hidden />
+    </div>
+  </footer>
+
+  <div id="theme-menu" class="popover" role="listbox" hidden></div>
+  <div id="export-menu" class="popover" role="menu" hidden>
+    <button class="popover-item" data-format="html" role="menuitem" type="button">HTML 网页</button>
+    <button class="popover-item" data-format="pdf" role="menuitem" type="button">PDF 文档</button>
+    <button class="popover-item" data-format="md" role="menuitem" type="button">Markdown 文档</button>
+  </div>
+
+  <div id="search-bar" class="search-bar" hidden>
+    <input id="search-input" type="search" placeholder="查找内容" aria-label="查找内容" />
+    <span id="search-result" class="search-result"></span>
+    <button id="search-next" class="text-button" type="button">下一个</button>
+    <button id="search-close" class="text-button" type="button">关闭</button>
+  </div>
+
+  <div id="toast" role="status"></div>
+
+  <div id="drop-overlay">
+    <div class="drop-card">
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>松开以插入图片或打开 Markdown 文件</p>
+    </div>
+  </div>
+
+  <div id="modal-overlay" hidden>
+    <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h3 id="modal-title">偏好设置</h3>
+        <button id="modal-close" class="icon-button" type="button" title="关闭" aria-label="关闭">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 5.5 14.5 14.5M14.5 5.5 5.5 14.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="vendor/katex/katex.min.js"></script>
+    <script src="vendor/katex/mhchem.min.js"></script>
+  <script src="vendor/dompurify/purify.min.js"></script>
+  <script src="vendor/mermaid/mermaid.min.js"></script>
+  <script src="app.js?v=24"></script>
+</body>
+</html>

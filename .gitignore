@@ -1,0 +1,7 @@
+node_modules/
+dist-package/
+work/
+.home/
+.tmp/
+.electron-cache/
+.DS_Store

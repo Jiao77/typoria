@@ -1,0 +1,24 @@
+{
+  "name": "typora-studio",
+  "productName": "Typora Studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Typora Studio：无边框、支持 Typora 主题与扩展语法的 Markdown 编辑器",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev --no-sandbox --disable-gpu",
+    "start:free": "electron . --no-sandbox --disable-gpu",
+    "vendor": "node scripts/vendor.mjs",
+    "package:mac": "node scripts/package-mac.mjs"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.6",
+    "katex": "^0.16.22",
+    "mermaid": "^10.9.5"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0"
+  }
+}
