@@ -1,10 +1,10 @@
 {
-  "name": "typora-studio",
-  "productName": "Typora Studio",
-  "version": "1.0.0",
+  "name": "typoria",
+  "productName": "Typoria",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
-  "description": "Typora Studio：无边框、支持 Typora 主题与扩展语法的 Markdown 编辑器",
+  "description": "Typoria：无边框、支持 Typora 主题与扩展语法的 Markdown 编辑器",
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",

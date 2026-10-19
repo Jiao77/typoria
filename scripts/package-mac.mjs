@@ -1,4 +1,4 @@
-// 将 Electron 运行时与 Typora Studio 应用文件组装为可直接打开的 macOS .app。
+// 将 Electron 运行时与 Typoria 应用文件组装为可直接打开的 macOS .app。
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,10 +9,10 @@ const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const electronApp = path.join(root, 'node_modules', 'electron', 'dist', 'Electron.app');
 const outDir = path.join(root, 'dist-package');
-const appBundle = path.join(outDir, 'Typora Studio.app');
+const appBundle = path.join(outDir, 'Typoria.app');
 const appResources = path.join(appBundle, 'Contents', 'Resources', 'app');
 const plist = path.join(appBundle, 'Contents', 'Info.plist');
-const executableName = 'Typora Studio';
+const executableName = 'Typoria';
 
 async function exists(target) {
   try {
@@ -56,10 +56,10 @@ if (await exists(oldExecutable)) {
 
 await fs.mkdir(path.dirname(plist), { recursive: true });
 await setPlist('CFBundleExecutable', 'string', executableName);
-await setPlist('CFBundleName', 'string', 'Typora Studio');
-await setPlist('CFBundleDisplayName', 'string', 'Typora Studio');
-await setPlist('CFBundleIdentifier', 'string', 'com.jiao77.typorastudio');
-await setPlist('CFBundleShortVersionString', 'string', '1.0.0');
+await setPlist('CFBundleName', 'string', 'Typoria');
+await setPlist('CFBundleDisplayName', 'string', 'Typoria');
+await setPlist('CFBundleIdentifier', 'string', 'com.jiao77.typoria');
+await setPlist('CFBundleShortVersionString', 'string', '1.0.1');
 await setPlist('CFBundleVersion', 'string', '1');
 await setPlist('CFBundleIconFile', 'string', 'icon.icns');
 await setPlist('NSHighResolutionCapable', 'bool', 'true');

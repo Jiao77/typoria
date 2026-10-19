@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Typora Clone — 核心逻辑
+   Typoria — 核心逻辑
    一个独立的、所见即所写（WYSIWYG）Markdown 编辑器复刻实现。
    ========================================================================== */
 'use strict';
@@ -14,7 +14,7 @@
   const ALT = IS_MAC ? '⌥' : 'Alt';
 
   const SAMPLE_MD = [
-    '# 欢迎使用 Typora Studio',
+    '# 欢迎使用 Typoria',
     '',
     '一款**所见即所写**的 Markdown 编辑器。点击任意段落即可直接编辑，光标离开后自动渲染。',
     '',
@@ -63,7 +63,7 @@
     '  return "专注写作，其余交给渲染 ✍️";',
     '}',
     '',
-    'console.log(write("# Hello, Typora Studio"));',
+    'console.log(write("# Hello, Typoria"));',
     '```',
     '',
     '### Mermaid 图表',
@@ -85,7 +85,7 @@
     '<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg">',
     '  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0071e3"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>',
     '  <rect width="360" height="80" rx="14" fill="url(#g)"/>',
-    '  <text x="180" y="48" font-family="-apple-system, sans-serif" font-size="21" fill="white" text-anchor="middle">Typora Studio</text>',
+    '  <text x="180" y="48" font-family="-apple-system, sans-serif" font-size="21" fill="white" text-anchor="middle">Typoria</text>',
     '</svg>',
     '',
     '[toc]',
@@ -212,7 +212,7 @@
     docTitleEl.title = state.fileName;
     sideFileEl.textContent = state.fileName;
     sideFileEl.title = state.fileName;
-    document.title = (state.fileDirty ? '• ' : '') + state.fileName + ' — Typora Studio';
+    document.title = (state.fileDirty ? '• ' : '') + state.fileName + ' — Typoria';
   }
 
   /* ── 行内渲染 ─────────────────────────────────────────── */
@@ -3935,8 +3935,8 @@
   function showAbout() {
     openModal('关于', `
       <div class="about-mark">T</div>
-      <p class="about-name">Typora Studio</p>
-      <p class="about-version">独立实现 · v1.0.0 · 无边框 Markdown 工作台</p>
+      <p class="about-name">Typoria</p>
+      <p class="about-version">独立实现 · v1.0.1 · 无边框 Markdown 工作台</p>
       <p>保留块级就地编辑的写作体验，支持 Typora 主题 CSS、LaTeX、Mermaid、HTML/SVG 与图片资源。</p>
       <h4>特性</h4>
       <table class="ref-table">
@@ -3983,7 +3983,7 @@
       if (window.studio && window.studio.recents) {
         state.recent = await window.studio.recents.get();
       } else {
-        state.recent = JSON.parse(localStorage.getItem('typora-studio.recents') || '[]');
+        state.recent = JSON.parse(localStorage.getItem('typoria.recents') || '[]');
       }
     } catch (error) {
       state.recent = [];
@@ -3998,7 +3998,7 @@
         state.recent = await window.studio.recents.add(target);
       } else {
         state.recent = [target, ...state.recent.filter((item) => item !== target)].slice(0, 12);
-        localStorage.setItem('typora-studio.recents', JSON.stringify(state.recent));
+        localStorage.setItem('typoria.recents', JSON.stringify(state.recent));
       }
     } catch (error) {
       state.recent = [target, ...state.recent.filter((item) => item !== target)].slice(0, 12);
@@ -4099,7 +4099,7 @@
   async function showSettings() {
     const themeDir = (window.studio && window.studio.themes && window.studio.themes.dir)
       ? await window.studio.themes.dir()
-      : '~/Library/Application Support/Typora Studio/themes';
+      : '~/Library/Application Support/Typoria/themes';
     const themes = [...BUILTIN_THEMES, ...(state.themes || [])];
     const themeOptions = themes.map((theme) => `<option value="${escapeHtml(theme.id)}" ${state.themeId === theme.id ? 'selected' : ''}>${escapeHtml(theme.name)}</option>`).join('');
     const fontSize = Number(state.settings.editorFontSize || 16);
@@ -4118,7 +4118,7 @@
       <div class="form-row"><label>URL 路径</label><input id="set-image-response-path" type="text" placeholder="data.url" value="${escapeHtml(state.settings.imageHostResponsePath || 'data.url')}" /></div>
       <p class="modal-note">上传时以 <code>multipart/form-data</code> POST 到该接口，从 JSON 响应的指定路径读取图片 URL。可在图片右键菜单中直接上传。</p>
       <h4>应用主题文件夹</h4>
-      <p>Typora Studio 使用自己的主题目录：<code>${escapeHtml(themeDir)}</code>。把主题 CSS 与同名字体、图片文件夹放到这里即可，不再依赖 Typora 安装目录。</p>
+      <p>Typoria 使用自己的主题目录：<code>${escapeHtml(themeDir)}</code>。把主题 CSS 与同名字体、图片文件夹放到这里即可，不再依赖 Typora 安装目录。</p>
       <div class="settings-actions">
         <button class="text-button" id="set-open-theme-folder" type="button">打开应用主题文件夹</button>
         <button class="text-button" id="set-import-typora" type="button">从 Typora 导入主题…</button>
@@ -4126,7 +4126,7 @@
         <button class="text-button" id="set-shortcuts" type="button">快捷键</button>
         <button class="text-button" id="set-about" type="button">关于</button>
       </div>
-      <p class="modal-note">Typora Studio 仅读取主题 CSS，不会修改你的 Typora 配置。</p>
+      <p class="modal-note">Typoria 仅读取主题 CSS，不会修改你的 Typora 配置。</p>
     `);
 
     const bindImageHostSetting = (id, key, fallback) => {
@@ -5226,7 +5226,7 @@
     console.error(error);
     const message = document.createElement('div');
     message.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);padding:20px 24px;border-radius:12px;background:#fff;color:#b00;box-shadow:0 18px 48px rgba(0,0,0,.2);font:13px/1.7 -apple-system,sans-serif;z-index:9999';
-    message.textContent = 'Typora Studio 启动失败：' + error.message;
+    message.textContent = 'Typoria 启动失败：' + error.message;
     document.body.appendChild(message);
   });
 })();

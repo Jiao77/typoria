@@ -20,7 +20,7 @@ const scrollArg = process.argv.find((arg) => arg.startsWith('--scroll='));
 const openArg = process.argv.find((arg) => arg.startsWith('--open-file='));
 if (captureArg) {
   // 截图/自动化模式必须把临时 userData 放在应用包外，否则会写入 .app 内部并破坏签名。
-  const captureData = path.join(os.tmpdir(), 'typora-studio-capture');
+  const captureData = path.join(os.tmpdir(), 'typoria-capture');
   mkdirSync(captureData, { recursive: true });
   app.setPath('userData', captureData);
 } else if (isDev) {
@@ -45,6 +45,31 @@ let hasUnsavedChanges = false;
 
 function safeName(value) {
   return String(value || '').replace(/[^\w.-]+/g, '-').slice(0, 80) || 'theme';
+}
+
+const LEGACY_STUDIO_USER_DATA = path.join(os.homedir(), 'Library/Application Support/Typora Studio');
+
+async function migrateLegacyStudioData() {
+  if (path.resolve(LEGACY_STUDIO_USER_DATA) === path.resolve(USER_DATA)) return;
+  try {
+    await fs.access(LEGACY_STUDIO_USER_DATA);
+  } catch {
+    return;
+  }
+  const copyIfMissing = async (relative) => {
+    const source = path.join(LEGACY_STUDIO_USER_DATA, relative);
+    const target = path.join(USER_DATA, relative);
+    try {
+      await fs.access(target);
+      return;
+    } catch { /* 目标不存在时复制 */ }
+    try {
+      await fs.cp(source, target, { recursive: true, verbatimSymlinks: true });
+    } catch { /* 迁移失败不阻塞启动 */ }
+  };
+  await copyIfMissing('settings.json');
+  await copyIfMissing('themes');
+  await copyIfMissing('Local Storage');
 }
 
 async function ensureUserThemeDir() {
@@ -211,7 +236,7 @@ function createWindow() {
     height: 840,
     minWidth: 860,
     minHeight: 560,
-    title: 'Typora Studio',
+    title: 'Typoria',
     icon: path.join(ROOT, 'assets', 'icon.png'),
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     trafficLightPosition: { x: 16, y: 14 },
@@ -321,18 +346,18 @@ function sendMenu(channel, payload) {
 function buildMenu() {
   const template = [
     {
-      label: 'Typora Studio',
+      label: 'Typoria',
       submenu: [
-        { role: 'about', label: '关于 Typora Studio' },
+        { role: 'about', label: '关于 Typoria' },
         { type: 'separator' },
         { label: '偏好设置…', accelerator: 'Command+,', click: () => sendMenu('menu:settings') },
         { label: '打开主题文件夹', click: () => shell.openPath(APP_THEME_DIR) },
         { type: 'separator' },
-        { role: 'hide', label: '隐藏 Typora Studio' },
+        { role: 'hide', label: '隐藏 Typoria' },
         { role: 'hideOthers', label: '隐藏其它' },
         { role: 'unhide', label: '显示全部' },
         { type: 'separator' },
-        { role: 'quit', label: '退出 Typora Studio' }
+        { role: 'quit', label: '退出 Typoria' }
       ]
     },
     {
@@ -480,7 +505,7 @@ async function loadImageForUpload(src, documentPath) {
 
 function registerIpc() {
   ipcMain.handle('app:info', () => ({
-    name: 'Typora Studio',
+    name: 'Typoria',
     version: app.getVersion(),
     platform: process.platform,
     themeDir: APP_THEME_DIR
@@ -763,6 +788,7 @@ function registerIpc() {
 
 app.whenReady().then(async () => {
   registerThemeProtocol();
+  await migrateLegacyStudioData();
   await ensureUserThemeDir();
   registerIpc();
   buildMenu();

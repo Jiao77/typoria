@@ -1,20 +1,20 @@
-# Typora Studio
+# Typoria
 
 一个独立实现的 macOS 无边框 Markdown 编辑器：保留「点击段落就地编辑、离开后自动排版」的块级写作体验，同时支持 Typora 主题 CSS、LaTeX、Mermaid、HTML / SVG、脚注、目录等扩展语法。
 
 它不是一个 Typora 分支，也不包含 Typora 的专有代码。界面视觉参考了 [TYPOAR](https://github.com/Jiao77/TYPOAR) 的布局与气质；编辑器交互与渲染逻辑均为本项目自己的实现。
 
-![Typora Studio 浅色主题](screenshots/studio-light.png)
+![Typoria 浅色主题](screenshots/typoria-light.png)
 
 ## 立即运行
 
 ### 直接打开打包好的应用
 
 ```bash
-open "dist-package/Typora Studio.app"
+open "dist-package/Typoria.app"
 ```
 
-如果 macOS 提示「无法验证开发者」或「已损坏」，在 Finder 中右键应用 → **打开**，或双击项目根目录的 **打开 Typora Studio.command**（会先移除 quarantine 标记再打开）。应用为本地构建，ad-hoc 签名、未做 Apple 公证。
+如果 macOS 提示「无法验证开发者」或「已损坏」，在 Finder 中右键应用 → **打开**，或双击项目根目录的 **打开 Typoria.command**（会先移除 quarantine 标记再打开）。应用为本地构建，ad-hoc 签名、未做 Apple 公证。
 
 ### 从源码运行
 
@@ -53,24 +53,24 @@ npm run start:free
 
 侧边栏与大纲（标题按层级缩进）：
 
-![侧边栏与大纲](screenshots/typora-sidebar-outline.png)
+![侧边栏与大纲](screenshots/typoria-sidebar.png)
 
 ### 主题截图
 
 GitHub 主题（自动读取本机 Typora 主题）：
 
-![GitHub 主题](screenshots/studio-github.png)
+![GitHub 主题](screenshots/typoria-github.png)
 
 Night 主题：
 
-![Night 主题](screenshots/studio-night.png)
+![Night 主题](screenshots/typoria-night.png)
 
 ## Typora 主题兼容
 
-Typora Studio 是独立应用，主题使用自己的目录：
+Typoria 是独立应用，主题使用自己的目录：
 
 ```
-~/Library/Application Support/Typora Studio/themes
+~/Library/Application Support/Typoria/themes
 ```
 
 应用内置 `resources/themes`（包含 GitHub、Night、LaTeX、LaTeX Dark 等），启动时与自己的用户主题目录合并显示。也可以从「偏好设置 → 应用主题文件夹」直接打开目录，或点击「从 Typora 导入主题…」把已有 Typora 主题复制过来（可选，不影响独立运行）。
@@ -191,7 +191,7 @@ Windows / Linux 下对应使用 `Ctrl` 与 `Shift`。
 ## 项目结构
 
 ```
-typora-studio/
+typoria/
 ├─ index.html              # 无边框应用外壳
 ├─ styles.css              # 外壳、编辑器、扩展与响应式样式
 ├─ app.js                  # 块级编辑器、解析/渲染、主题适配、文件与导出
@@ -213,7 +213,7 @@ typora-studio/
 ```bash
 npm run vendor        # 重新生成 vendor/ 下的 KaTeX、DOMPurify、Mermaid
 npm run dev           # 开发模式（受限环境使用 --no-sandbox）
-npm run package:mac   # 生成 dist-package/Typora Studio.app
+npm run package:mac   # 生成 dist-package/Typoria.app
 ```
 
 `package-mac.mjs` 会复制 Electron 运行时，把应用源码放入 `Contents/Resources/app`，改写 `Info.plist`、应用名与图标，并对应用做 ad-hoc 签名。复制 Electron 时会保留 framework 内的相对符号链接，否则签名会失效、Finder 会提示应用已损坏。ad-hoc 签名不满足 Apple 公证要求（`spctl` 会拒绝），但本机直接打开不受影响；如果从网络下载或拷贝后带了 quarantine 属性，右键 → 打开即可。
