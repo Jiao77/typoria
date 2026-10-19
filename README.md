@@ -6,6 +6,19 @@
 
 ![Typoria 浅色主题](screenshots/typoria-light.png)
 
+## 下载
+
+- [GitHub Releases](https://github.com/Jiao77/typoria/releases)
+- [Gitea Releases](https://gitea.jiao77.com/Jiao77/typoria/releases)
+- [Typoria 1.0.1 DMG（GitHub）](https://github.com/Jiao77/typoria/releases/download/v1.0.1/Typoria-1.0.1-arm64.dmg)
+- [Typoria 1.0.1 DMG（Gitea）](https://gitea.jiao77.com/Jiao77/typoria/releases/download/v1.0.1/Typoria-1.0.1-arm64.dmg)
+
+SHA-256：
+
+```text
+26bf1b5f8278ebc9b3f3e1de3ee74e75f6582266b42039fa13badebfba9428a8
+```
+
 ## 立即运行
 
 ### 直接打开打包好的应用
