@@ -272,11 +272,19 @@ Note / Tip / Important / Warning / Caution 使用不同的颜色、边框和图�
 - 代码高亮是内置的轻量实现，覆盖常见语言的关键字、字符串、注释与数字，不等同于 highlight.js。
 - 导出 HTML 中的主题字体、背景图使用 `studio-theme://` 地址，离开本应用后可能无法加载；需要完全可移植的 HTML 时可以再内联资源。
 - 应用未做 Apple 公证；首次打开可能需要右键 → 打开。
-- 未实现图床上传、协作、插件系统、Typora 的导出模板与 Pandoc 集成。
+- 未实现协作、插件系统、Typora 的导出模板与 Pandoc 集成。
 
 ## 致谢与声明
 
 - 界面布局参考用户提供的 TYPOAR 项目；未复用其编辑器、渲染器、主题加载或图床逻辑。
 - 编辑器核心基于本项目此前的独立 Typora 复刻实现。
-- 第三方依赖：Electron、KaTeX、Mermaid、DOMPurify，分别遵循其各自许可证。
+- 第三方依赖：Electron（MIT）、KaTeX（MIT）、Mermaid（MIT）、DOMPurify（Apache-2.0 OR MPL-2.0），以及随主题分发的字体。完整版权和许可证全文见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+- 内置主题中的部分文件来自 Typora 默认主题分发，**不由本项目的 MIT 许可证重新授权**；公开再分发前应确认授权或替换。详见第三方声明。
 - Typora 是 Typora 公司的商标；本项目与 Typora 官方无关联，仅用于学习与本地写作。
+
+
+## 许可证
+
+Typoria 的原创代码采用 [MIT License](LICENSE)。
+
+`vendor/`、`resources/themes/` 和 Electron 运行时属于第三方组件，按各自许可证分发，不适用项目根目录的 MIT 许可证。完整清单与许可证全文见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

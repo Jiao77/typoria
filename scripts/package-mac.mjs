@@ -24,7 +24,7 @@ async function exists(target) {
 }
 
 async function copyAppSource() {
-  const files = ['index.html', 'styles.css', 'app.js', 'package.json', 'assets', 'vendor', 'resources', 'electron'];
+  const files = ['index.html', 'styles.css', 'app.js', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'assets', 'vendor', 'resources', 'electron'];
   for (const name of files) {
     const source = path.join(root, name);
     if (!(await exists(source))) continue;
@@ -59,7 +59,7 @@ await setPlist('CFBundleExecutable', 'string', executableName);
 await setPlist('CFBundleName', 'string', 'Typoria');
 await setPlist('CFBundleDisplayName', 'string', 'Typoria');
 await setPlist('CFBundleIdentifier', 'string', 'com.jiao77.typoria');
-await setPlist('CFBundleShortVersionString', 'string', '1.0.1');
+await setPlist('CFBundleShortVersionString', 'string', '1.0.2');
 await setPlist('CFBundleVersion', 'string', '1');
 await setPlist('CFBundleIconFile', 'string', 'icon.icns');
 await setPlist('NSHighResolutionCapable', 'bool', 'true');

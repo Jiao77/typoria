@@ -3265,7 +3265,7 @@
     }
     const isLatex = /^latex/i.test(String(themeId || ''));
     style.textContent = '#write { margin-left: auto !important; margin-right: auto !important;'
-      + (isLatex ? ' border: 0 !important; box-shadow: none !important; padding: 1.8cm 2cm 1.2cm 2cm !important;' : '')
+      + (isLatex ? ' border: 0 !important; padding: 1.8cm 2cm 1.2cm 2cm !important;' : '')
       + ' }\n#write .block.type-quote[data-level="1"] { margin-left: 0 !important; }\n#write .block.type-quote[data-level="2"] { margin-left: 1.45em !important; }\n#write .block.type-quote[data-level="3"] { margin-left: 2.9em !important; }\n#write .block.type-quote[data-level="4"] { margin-left: 4.35em !important; }\n#write .block.type-quote[data-level="5"] { margin-left: 5.8em !important; }\n#write .block.type-quote[data-level="6"] { margin-left: 7.25em !important; }\n#write .block.hr-block { height:auto !important; min-height:0 !important; padding:0 !important; margin:1.1em 0 !important; background:transparent !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }\n#write .block.hr-block .block-content { display:none !important; }\n#write .block.hr-block::before { content:"" !important; display:block !important; width:100% !important; border-top:1.5px solid var(--border-strong) !important; }';
     document.head.appendChild(style);
   }
@@ -3936,7 +3936,7 @@
     openModal('关于', `
       <div class="about-mark">T</div>
       <p class="about-name">Typoria</p>
-      <p class="about-version">独立实现 · v1.0.1 · 无边框 Markdown 工作台</p>
+      <p class="about-version">独立实现 · v1.0.2 · 无边框 Markdown 工作台</p>
       <p>保留块级就地编辑的写作体验，支持 Typora 主题 CSS、LaTeX、Mermaid、HTML/SVG 与图片资源。</p>
       <h4>特性</h4>
       <table class="ref-table">
@@ -3946,7 +3946,7 @@
         <tr><td>文件能力</td><td>打开、保存、另存为、拖放导入、导出 HTML/PDF</td></tr>
         <tr><td>桌面体验</td><td>无边框窗口、原生菜单、图片本地化存储</td></tr>
       </table>
-      <p class="modal-footnote">本项目为学习与技术演示用途，不包含 Typora 的专有代码，与 Typora 官方无关联。Typora 是 Typora 公司的商标。界面视觉参考了用户提供的 TYPOAR 项目。</p>
+      <p class="modal-footnote">本项目为学习与技术演示用途，不包含 Typora 的专有代码，与 Typora 官方无关联。Typora 是 Typora 公司的商标。界面视觉参考了用户提供的 TYPOAR 项目。原创代码采用 MIT 许可证；第三方组件与主题许可见「帮助 → 第三方许可与版权…」。</p>
     `);
   }
 

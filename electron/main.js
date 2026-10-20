@@ -427,6 +427,9 @@ function buildMenu() {
       label: '帮助',
       submenu: [
         { label: 'Markdown 扩展语法', click: () => sendMenu('menu:reference') },
+        { type: 'separator' },
+        { label: '第三方许可与版权…', click: () => shell.openPath(path.join(ROOT, 'THIRD_PARTY_NOTICES.md')) },
+        { label: 'MIT 许可证…', click: () => shell.openPath(path.join(ROOT, 'LICENSE')) },
         { label: '开发者工具', accelerator: 'Alt+CommandOrControl+I', role: 'toggleDevTools' }
       ]
     }

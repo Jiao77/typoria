@@ -1,8 +1,9 @@
 {
   "name": "typoria",
   "productName": "Typoria",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Typoria：无边框、支持 Typora 主题与扩展语法的 Markdown 编辑器",
   "main": "electron/main.js",
