@@ -24,7 +24,7 @@
 
 - `pixyll.css`：forked from pixyll.com，MIT License，Copyright (c) 2015 John Otander。
 - `github.css`、`night.css`、`gothic.css`、`newsprint.css`、`whitey.css`：主题来源为 Typora 默认主题分发，目录中没有独立的许可证文件。**这些文件不由本项目的 MIT 许可证重新授权**，版权归原作者所有；当前仅作为主题兼容性示例随内部测试版提供。若公开再分发，应先取得授权或替换为自有主题。
-- `latex.css`、`latex-dark.css`：来自 TYPOAR 项目，随本项目作者提供的主题文件一并使用。
+- `latex.css`、`latex-dark.css`：迁移自 Typora 主题并做了适配。
 - `night/credit.html`：Night 主题图标由 Freepik 从 Flaticon 提供，采用 CC BY 3.0 许可；参见该文件中的署名。
 
 ## 许可证全文

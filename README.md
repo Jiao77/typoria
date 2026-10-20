@@ -2,14 +2,11 @@
 
 一个独立实现的 macOS 无边框 Markdown 编辑器：保留「点击段落就地编辑、离开后自动排版」的块级写作体验，同时支持 Typora 主题 CSS、LaTeX、Mermaid、HTML / SVG、脚注、目录等扩展语法。
 
-它不是一个 Typora 分支，也不包含 Typora 的专有代码。界面视觉参考了用户提供的 TYPOAR 项目的布局与气质；编辑器交互与渲染逻辑均为本项目自己的实现。
-
 ![Typoria 浅色主题](screenshots/typoria-light.png)
 
 ## 下载
 
 - [GitHub Releases](https://github.com/Jiao77/typoria/releases)
-- [Gitea Releases](https://gitea.jiao77.com/Jiao77/typoria/releases)
 
 当前公开 Release 为 1.0.1；1.0.2 增加了 MIT 与第三方许可证说明，作为校内测试包单独分发。
 
@@ -109,7 +106,7 @@ GitHub 源码版内置 `resources/themes`（包含 Pixyll、LaTeX、LaTeX Dark�
 
 状态栏右下角的「主题」按钮可以快速切换 Studio 内置主题或应用自己的主题、打开主题文件夹、刷新主题列表。
 
-LaTeX 主题（从 TYPOAR 主题资源复制并内置）：
+LaTeX 主题（迁移自 Typora 的主题）：
 
 ![LaTeX 主题](screenshots/typora-latex.png)
 
@@ -265,7 +262,7 @@ Note / Tip / Important / Warning / Caution 使用不同的颜色、边框和图�
 
 ## 兼容性测试
 
-项目内已用用户提供的 `TYPOAR-Markdown全语法演示.md` 做过解析检查，覆盖 Setext、参考链接、图片尺寸属性、GFM / MultiMarkdown 表格、跨列跨行、多行单元格、无表头表格、定义列表、脚注、HTML/SVG、KaTeX 与 10 类 Mermaid 图表。该文件的外部图片路径会按 Markdown 文件所在目录解析。
+项目内已用全语法演示文档做过解析检查，覆盖 Setext、参考链接、图片尺寸属性、GFM / MultiMarkdown 表格、跨列跨行、多行单元格、无表头表格、定义列表、脚注、HTML/SVG、KaTeX 与 10 类 Mermaid 图表。该文件的外部图片路径会按 Markdown 文件所在目录解析。
 
 ![Markdown-it-attrs 图片宽度](screenshots/typora-images.png)
 
@@ -286,7 +283,6 @@ Note / Tip / Important / Warning / Caution 使用不同的颜色、边框和图�
 
 ## 致谢与声明
 
-- 界面布局参考用户提供的 TYPOAR 项目；未复用其编辑器、渲染器、主题加载或图床逻辑。
 - 编辑器核心基于本项目此前的独立 Typora 复刻实现。
 - 第三方依赖：Electron（MIT）、KaTeX（MIT）、Mermaid（MIT）、DOMPurify（Apache-2.0 OR MPL-2.0），以及随主题分发的字体。完整版权和许可证全文见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
 - 内置主题中的部分文件来自 Typora 默认主题分发，**不由本项目的 MIT 许可证重新授权**；公开再分发前应确认授权或替换。详见第三方声明。
