@@ -2,7 +2,7 @@
 
 一个独立实现的 macOS 无边框 Markdown 编辑器：保留「点击段落就地编辑、离开后自动排版」的块级写作体验，同时支持 Typora 主题 CSS、LaTeX、Mermaid、HTML / SVG、脚注、目录等扩展语法。
 
-它不是一个 Typora 分支，也不包含 Typora 的专有代码。界面视觉参考了 [TYPOAR](https://github.com/Jiao77/TYPOAR) 的布局与气质；编辑器交互与渲染逻辑均为本项目自己的实现。
+它不是一个 Typora 分支，也不包含 Typora 的专有代码。界面视觉参考了用户提供的 TYPOAR 项目的布局与气质；编辑器交互与渲染逻辑均为本项目自己的实现。
 
 ![Typoria 浅色主题](screenshots/typoria-light.png)
 
@@ -10,14 +10,8 @@
 
 - [GitHub Releases](https://github.com/Jiao77/typoria/releases)
 - [Gitea Releases](https://gitea.jiao77.com/Jiao77/typoria/releases)
-- [Typoria 1.0.1 DMG（GitHub）](https://github.com/Jiao77/typoria/releases/download/v1.0.1/Typoria-1.0.1-arm64.dmg)
-- [Typoria 1.0.1 DMG（Gitea）](https://gitea.jiao77.com/Jiao77/typoria/releases/download/v1.0.1/Typoria-1.0.1-arm64.dmg)
 
-SHA-256：
-
-```text
-26bf1b5f8278ebc9b3f3e1de3ee74e75f6582266b42039fa13badebfba9428a8
-```
+当前公开 Release 为 1.0.1；1.0.2 增加了 MIT 与第三方许可证说明，作为校内测试包单独分发。
 
 ## 立即运行
 
@@ -52,7 +46,7 @@ npm run start:free
 | --- | --- |
 | 无边框桌面窗口 | 原生交通灯 + 自绘覆盖式标题栏，窗口拖动、红绿灯留白与内容滚动融合 |
 | 块级就地编辑 | 点击段落编辑源码，光标离开后自动渲染；标题、引用、列表、任务、表格、代码块、公式均可就地编辑 |
-| Typora 主题 | 使用应用自己的主题目录，内置 Studio 浅色 / 深色与 TYPOAR 的 GitHub、Night、LaTeX 等主题；可独立运行 |
+| Typora 主题 | 使用应用自己的主题目录，内置 Studio 浅色 / 深色、Pixyll、LaTeX 与 LaTeX Dark；可导入自定义 CSS 主题 |
 | LaTeX | 行内 `$...$`、`\(...\)` 与块级 `$$...$$`，使用 KaTeX 渲染 |
 | Mermaid / 传统图表 | ` ```mermaid `、` ```flow `、` ```sequence ` 渲染为 SVG；主题切换时重新着色 |
 | HTML / SVG | 块级与行内 HTML、SVG 渲染，经 DOMPurify 安全过滤 |
@@ -68,15 +62,23 @@ npm run start:free
 
 ![侧边栏与大纲](screenshots/typoria-sidebar.png)
 
-### 主题截图
+## 演示文档
 
-GitHub 主题（自动读取本机 Typora 主题）：
+完整演示文档：[`examples/Typoria-Markdown演示.md`](examples/Typoria-Markdown演示.md)
 
-![GitHub 主题](screenshots/typoria-github.png)
+![标题与引用](examples/screenshots/01-heading-quote.png)
 
-Night 主题：
+![列表与任务](examples/screenshots/02-lists.png)
 
-![Night 主题](screenshots/typoria-night.png)
+![表格](examples/screenshots/03-table.png)
+
+![代码与公式](examples/screenshots/04-code-math.png)
+
+![图表](examples/screenshots/05-diagrams.png)
+
+![提示块](examples/screenshots/06-callouts.png)
+
+![图片与 HTML/SVG](examples/screenshots/07-image-html.png)
 
 ## Typora 主题兼容
 
@@ -86,7 +88,7 @@ Typoria 是独立应用，主题使用自己的目录：
 ~/Library/Application Support/Typoria/themes
 ```
 
-应用内置 `resources/themes`（包含 GitHub、Night、LaTeX、LaTeX Dark 等），启动时与自己的用户主题目录合并显示。也可以从「偏好设置 → 应用主题文件夹」直接打开目录，或点击「从 Typora 导入主题…」把已有 Typora 主题复制过来（可选，不影响独立运行）。
+GitHub 源码版内置 `resources/themes`（包含 Pixyll、LaTeX、LaTeX Dark）；未获明确再分发授权的 Typora 默认主题不进入公开仓库。本地开发副本可以另行放置这些主题。也可以从「偏好设置 → 应用主题文件夹」直接打开目录，或点击「从 Typora 导入主题…」把已有 Typora 主题复制过来（可选，不影响独立运行）。
 
 主题加载流程：
 

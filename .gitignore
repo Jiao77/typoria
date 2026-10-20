@@ -5,3 +5,18 @@ work/
 .tmp/
 .electron-cache/
 .DS_Store
+
+# 本地保留、不随 GitHub 源码分发的未授权主题
+resources/themes/github.css
+resources/themes/github/
+resources/themes/night.css
+resources/themes/night/
+resources/themes/gothic.css
+resources/themes/gothic/
+resources/themes/newsprint.css
+resources/themes/newsprint/
+resources/themes/whitey.css
+resources/themes/README.md
+resources/themes/LICENSE-FONTS.md
+screenshots/typoria-github.png
+screenshots/typoria-night.png

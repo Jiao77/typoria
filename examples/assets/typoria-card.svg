@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef4ff"/>
+      <stop offset="1" stop-color="#f8f3ff"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f6fed"/>
+      <stop offset="1" stop-color="#7b61d1"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="360" rx="28" fill="url(#bg)"/>
+  <rect x="28" y="28" width="904" height="304" rx="20" fill="#ffffff" stroke="#dbe6ff"/>
+  <text x="70" y="112" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="24" fill="#6b7a90" letter-spacing="4">TYPORIA MARKDOWN</text>
+  <text x="70" y="188" font-family="Georgia, 'Songti SC', serif" font-size="56" font-weight="700" fill="#1e2a3a">写作，不必离开正文。</text>
+  <text x="70" y="238" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="20" fill="#6b7a90">块级就地编辑 · 主题 CSS · KaTeX · Mermaid · 扩展表格</text>
+  <rect x="70" y="270" width="160" height="6" rx="3" fill="url(#ink)"/>
+  <text x="860" y="300" text-anchor="end" font-family="Georgia, serif" font-size="58" font-weight="700" fill="url(#ink)">T</text>
+</svg>
