@@ -6,9 +6,16 @@
 
 ## 下载
 
-- [GitHub Releases](https://github.com/Jiao77/typoria/releases)
+- [Typoria 1.0.2 DMG（GitHub）](https://github.com/Jiao77/typoria/releases/download/v1.0.2/Typoria-1.0.2-arm64.dmg)
+- [全部 Releases](https://github.com/Jiao77/typoria/releases)
 
-当前公开 Release 为 1.0.1；1.0.2 增加了 MIT 与第三方许可证说明，作为校内测试包单独分发。
+SHA-256：
+
+```text
+a8e056cbd8596ac933f99e7be669d0b398155ba6139af8642d466079078a1d7b
+```
+
+> 1.0.2：修复 PDF / HTML 导出中的嵌套引用、多级列表缩进与任务勾选状态；补充 MIT 与第三方许可证说明。
 
 ## 立即运行
 
