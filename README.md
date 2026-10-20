@@ -49,7 +49,7 @@ npm run start:free
 | Typora 主题 | 使用应用自己的主题目录，内置 Studio 浅色 / 深色、Pixyll、LaTeX 与 LaTeX Dark；可导入自定义 CSS 主题 |
 | LaTeX | 行内 `$...$`、`\(...\)` 与块级 `$$...$$`，使用 KaTeX 渲染 |
 | Mermaid / 传统图表 | ` ```mermaid `、` ```flow `、` ```sequence ` 渲染为 SVG；主题切换时重新着色 |
-| HTML / SVG | 块级与行内 HTML、SVG 渲染，经 DOMPurify 安全过滤 |
+| HTML / SVG | 块级与行内 HTML、SVG 渲染，经 DOMPurify 安全过滤；支持 HTML 表格 `rowspan/colspan`、`details`、`progress`、`figure` 等块级标签 |
 | 图片 | 支持远程 / 图床 URL、data URI、本地相对路径；拖放、粘贴或菜单插入时保存到文档旁的 `assets/`；支持 `{width="25%"}` 等尺寸属性；图片右键菜单可缩放、复制地址、上传图床 |
 | 扩展表格 | GFM 对齐表格、MultiMarkdown 跨列 / 跨行、多行单元格、无表头表格、表格标题、转义竖线 |
 | 参考链接 | `[文字][id]`、`![图片][id]` 与文末定义区解析 |
@@ -79,6 +79,14 @@ npm run start:free
 ![提示块](examples/screenshots/06-callouts.png)
 
 ![图片与 HTML/SVG](examples/screenshots/07-image-html.png)
+
+![MultiMarkdown 与 HTML 表格](examples/screenshots/08-advanced-tables.png)
+
+![HTML 块、rowspan/colspan 与 details](examples/screenshots/09-html-blocks.png)
+
+![HTML 进度条、标签与 figure](examples/screenshots/10-html-widgets.png)
+
+![复杂内联 SVG](examples/screenshots/11-complex-svg.png)
 
 ## Typora 主题兼容
 
