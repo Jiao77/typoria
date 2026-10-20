@@ -1920,6 +1920,7 @@
         cb.type = 'checkbox';
         cb.className = 'task-checkbox';
         cb.checked = info.checked;
+        if (info.checked) cb.setAttribute('checked', '');
         cb.tabIndex = -1;
         cb.setAttribute('contenteditable', 'false');
         cb.setAttribute('aria-label', '切换任务完成状态');
@@ -3722,9 +3723,15 @@
     .type-h5 { font-size:1em; margin:.9em 0 .3em; }
     .type-h6 { font-size:.95em; margin:.9em 0 .3em; color:var(--muted); }
     .type-quote { border-left:3px solid var(--quote); padding-left:1.05em; color:var(--muted); margin:.75em 0; white-space:pre-wrap; }
-    .type-li,.type-task { margin:.26em 0; white-space:pre-wrap; }
+    #write .block.type-quote[data-level="2"] { margin-left:1.45em !important; }
+    #write .block.type-quote[data-level="3"] { margin-left:2.9em !important; }
+    #write .block.type-quote[data-level="4"] { margin-left:4.35em !important; }
+    #write .block.type-quote[data-level="5"] { margin-left:5.8em !important; }
+    #write .block.type-quote[data-level="6"] { margin-left:7.25em !important; }
+    .type-li,.type-task { margin:.26em 0; white-space:pre-wrap; margin-left:calc(1.1em + var(--indent, 0) * 1.65em) !important; }
     .li-bullet { display:inline; margin-right:.52em; color:var(--muted); }
     .li-bullet::before { content: attr(data-bullet); }
+    #write .block.type-task .task-checkbox { display:inline-block; width:14px; height:14px; margin:0 .55em 0 0; vertical-align:-2px; accent-color:var(--accent); opacity:1; }
     .task-checkbox { width:15px; height:15px; margin:0 .55em 0 0; vertical-align:-2px; accent-color:var(--accent); }
     .type-task.checked { color:var(--muted); text-decoration:line-through; }
     .hr-block { margin:1.1em 0; display:flex; align-items:center; }
