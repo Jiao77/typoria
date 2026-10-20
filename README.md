@@ -2,8 +2,6 @@
 
 一个独立实现的 macOS 无边框 Markdown 编辑器：保留「点击段落就地编辑、离开后自动排版」的块级写作体验，同时支持 Typora 主题 CSS、LaTeX、Mermaid、HTML / SVG、脚注、目录等扩展语法。
 
-![Typoria 浅色主题](screenshots/typoria-hero.png)
-
 ## 下载
 
 - [Typoria 1.0.2 DMG（GitHub）](https://github.com/Jiao77/typoria/releases/download/v1.0.2/Typoria-1.0.2-arm64.dmg)
