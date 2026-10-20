@@ -4658,7 +4658,10 @@
     btnSaveAs?.addEventListener('click', () => saveDocument(true));
     btnImage?.addEventListener('click', handleInsertImage);
     btnExport?.addEventListener('click', () => togglePopover(exportMenu, btnExport));
-    btnTheme?.addEventListener('click', () => togglePopover(themeMenu, btnTheme));
+    btnTheme?.addEventListener('click', async () => {
+      if (themeMenu && themeMenu.hidden) await loadThemeList();
+      togglePopover(themeMenu, btnTheme);
+    });
 
     for (const item of exportMenu?.querySelectorAll('.popover-item') || []) {
       item.addEventListener('click', () => {
