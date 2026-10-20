@@ -10,7 +10,7 @@
 SHA-256：
 
 ```text
-a8e056cbd8596ac933f99e7be669d0b398155ba6139af8642d466079078a1d7b
+4e705df3961ea56ab067356193bfb5edb628660c2dccb61766fc3538d8d53528
 ```
 
 > 1.0.2：修复 PDF / HTML 导出中的嵌套引用、多级列表缩进与任务勾选状态；补充 MIT 与第三方许可证说明。
@@ -48,7 +48,7 @@ npm run start:free
 | --- | --- |
 | 无边框桌面窗口 | 原生交通灯 + 自绘覆盖式标题栏，窗口拖动、红绿灯留白与内容滚动融合 |
 | 块级就地编辑 | 点击段落编辑源码，光标离开后自动渲染；标题、引用、列表、任务、表格、代码块、公式均可就地编辑 |
-| Typora 主题 | 使用应用自己的主题目录，内置 Studio 浅色 / 深色、Pixyll、LaTeX 与 LaTeX Dark；可导入自定义 CSS 主题 |
+| Typora 主题 | 使用应用自己的主题目录，内置 Studio 浅色 / 深色、Pixyll、LaTeX 与 LaTeX Dark；支持顶层 CSS 与文件夹形式主题（递归扫描子目录 CSS，资源按 CSS 所在目录解析） |
 | LaTeX | 行内 `$...$`、`\(...\)` 与块级 `$$...$$`，使用 KaTeX 渲染 |
 | Mermaid / 传统图表 | ` ```mermaid `、` ```flow `、` ```sequence ` 渲染为 SVG；主题切换时重新着色 |
 | HTML / SVG | 块级与行内 HTML、SVG 渲染，经 DOMPurify 安全过滤；支持 HTML 表格 `rowspan/colspan`、`details`、`progress`、`figure` 等块级标签 |
@@ -98,7 +98,12 @@ Typoria 是独立应用，主题使用自己的目录：
 ~/Library/Application Support/Typoria/themes
 ```
 
-GitHub 源码版内置 `resources/themes`（包含 Pixyll、LaTeX、LaTeX Dark）；未获明确再分发授权的 Typora 默认主题不进入公开仓库。本地开发副本可以另行放置这些主题。也可以从「偏好设置 → 应用主题文件夹」直接打开目录，或点击「从 Typora 导入主题…」把已有 Typora 主题复制过来（可选，不影响独立运行）。
+GitHub 源码版内置 `resources/themes`（包含 Pixyll、LaTeX、LaTeX Dark）；未获明确再分发授权的 Typora 默认主题不进入公开仓库。本地开发副本可以另行放置这些主题。
+
+用户主题目录支持两种结构：
+
+- 顶层 `<theme>.css` + 同名资源文件夹；
+- 文件夹主题，例如 `<package>/<theme>.css` 与 `<package>/<theme>/fonts/...`；应用会递归扫描 `<package>` 下的 CSS，并把相对资源解析到 CSS 所在目录。也可以从「偏好设置 → 应用主题文件夹」直接打开目录，或点击「从 Typora 导入主题…」把已有 Typora 主题复制过来（可选，不影响独立运行）。
 
 主题加载流程：
 

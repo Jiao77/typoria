@@ -97,80 +97,156 @@ async function updateSettings(patch) {
   return writeSettings({ ...current, ...patch });
 }
 
-async function listCssFiles(dir) {
+const THEME_IGNORED_DIRS = new Set(['.git', '.github', 'node_modules', 'screenshots', 'samples', 'plugin', 'plugin-live', 'themes-live', 'vlook', 'fonts', 'assets']);
+
+function isThemeCssFile(fileName) {
+  const lower = String(fileName || '').toLowerCase();
+  if (lower === 'base.user.css' || lower.endsWith('.user.css')) return false;
+  if (/^fs-.*-min\.css$/.test(lower)) return false;
+  if (['export.css', 'codeblock.dark.css', 'mermaid.dark.css', 'sourcemode.dark.css'].includes(lower)) return false;
+  return true;
+}
+
+function themeIdForRelative(relativePath) {
+  const withoutExt = String(relativePath || '').replace(/\.css$/i, '');
+  const slug = withoutExt
+    .split('/')
+    .map((part) => part.normalize('NFKD').replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase())
+    .filter(Boolean)
+    .join('--');
+  if (slug) return slug;
+  return 'theme-' + Buffer.from(withoutExt).toString('base64url').slice(0, 8).toLowerCase();
+}
+
+async function findThemeCssFiles(rootDir, currentDir = rootDir, relativeDir = '', depth = 0) {
+  if (depth > 7) return [];
+  let entries = [];
   try {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.css'))
-      .map((entry) => entry.name)
-      .sort((left, right) => left.localeCompare(right));
+    entries = await fs.readdir(currentDir, { withFileTypes: true });
   } catch (error) {
     if (error.code === 'ENOENT') return [];
     throw error;
   }
+  const found = [];
+  for (const entry of entries) {
+    if (entry.name.startsWith('.') || THEME_IGNORED_DIRS.has(entry.name)) continue;
+    const absolute = path.join(currentDir, entry.name);
+    const relative = path.posix.join(relativeDir, entry.name);
+    if (entry.isDirectory()) {
+      found.push(...await findThemeCssFiles(rootDir, absolute, relative, depth + 1));
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.toLowerCase().endsWith('.css')) continue;
+    if (!isThemeCssFile(entry.name)) continue;
+    found.push({ relative, rootDir });
+  }
+  return found;
 }
 
-function themeIdOf(fileName) {
-  return fileName.replace(/\.css$/i, '').replace(/\s+/g, '-').toLowerCase();
+function themeRecordOf(entry, source) {
+  const fileName = path.basename(entry.relative);
+  return {
+    id: themeIdForRelative(entry.relative),
+    name: fileName.replace(/\.css$/i, ''),
+    source,
+    relative: entry.relative,
+    rootDir: entry.rootDir
+  };
+}
+
+async function scanThemeRoot(rootDir, source, recursive = true) {
+  let entries;
+  if (recursive) {
+    entries = await findThemeCssFiles(rootDir);
+  } else {
+    entries = [];
+    try {
+      const files = await fs.readdir(rootDir, { withFileTypes: true });
+      for (const entry of files) {
+        if (!entry.isFile() || !entry.name.toLowerCase().endsWith('.css')) continue;
+        if (!isThemeCssFile(entry.name)) continue;
+        entries.push({ relative: entry.name, rootDir });
+      }
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+  return entries
+    .map((entry) => themeRecordOf(entry, source))
+    .sort((left, right) => left.name.localeCompare(right.name) || left.id.localeCompare(right.id));
+}
+
+let themeCatalogCache = null;
+let themeCatalogTime = 0;
+
+async function getThemeCatalog(force = false) {
+  if (!force && themeCatalogCache && Date.now() - themeCatalogTime < 1500) return themeCatalogCache;
+  const user = await scanThemeRoot(await ensureUserThemeDir(), 'user');
+  const bundled = await scanThemeRoot(BUNDLED_THEME_DIR, 'bundled', false);
+  themeCatalogCache = { user, bundled };
+  themeCatalogTime = Date.now();
+  return themeCatalogCache;
 }
 
 async function listThemes() {
-  const themes = [];
-  const userDir = await ensureUserThemeDir();
-  const userFiles = await listCssFiles(userDir);
-  const userIds = new Set();
-  for (const fileName of userFiles) {
-    if (fileName.toLowerCase().endsWith('.user.css')) continue;
-    const id = themeIdOf(fileName);
-    if (!id) continue;
-    userIds.add(id);
-    themes.push({ id, name: fileName.replace(/\.css$/i, ''), source: 'user' });
-  }
-  const bundledFiles = await listCssFiles(BUNDLED_THEME_DIR);
-  for (const fileName of bundledFiles) {
-    if (fileName.toLowerCase().endsWith('.user.css')) continue;
-    const id = themeIdOf(fileName);
-    if (!id || userIds.has(id)) continue;
-    themes.push({ id, name: fileName.replace(/\.css$/i, ''), source: 'bundled' });
-  }
-  return themes.sort((a, b) => a.name.localeCompare(b.name));
+  const { user, bundled } = await getThemeCatalog(true);
+  const userIds = new Set(user.map((theme) => theme.id));
+  const all = [...user, ...bundled.filter((theme) => !userIds.has(theme.id))];
+  const nameCounts = new Map();
+  for (const theme of all) nameCounts.set(theme.name, (nameCounts.get(theme.name) || 0) + 1);
+  return all
+    .map((theme) => ({
+      id: theme.id,
+      name: nameCounts.get(theme.name) > 1
+        ? `${theme.name} · ${path.basename(path.posix.dirname(theme.relative))}`
+        : theme.name,
+      source: theme.source
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 async function resolveThemeDir(id) {
   const normalized = String(id || '').toLowerCase();
-  const userDir = await ensureUserThemeDir();
-  const userFiles = await listCssFiles(userDir);
-  for (const fileName of userFiles) {
-    if (fileName.toLowerCase().endsWith('.user.css')) continue;
-    if (themeIdOf(fileName) === normalized) return { dir: userDir, file: fileName, source: 'user' };
-  }
-  const bundledFiles = await listCssFiles(BUNDLED_THEME_DIR);
-  for (const fileName of bundledFiles) {
-    if (fileName.toLowerCase().endsWith('.user.css')) continue;
-    if (themeIdOf(fileName) === normalized) return { dir: BUNDLED_THEME_DIR, file: fileName, source: 'bundled' };
-  }
-  return null;
+  const { user, bundled } = await getThemeCatalog(false);
+  const match = user.find((theme) => theme.id === normalized) || bundled.find((theme) => theme.id === normalized);
+  if (!match) return null;
+  return {
+    ...match,
+    cssDir: path.posix.dirname(match.relative),
+    file: path.basename(match.relative)
+  };
 }
 
-function rewriteThemeUrls(cssText, themeId) {
-  return String(cssText).replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (match, quote, rawUrl) => {
-    const url = String(rawUrl).trim();
-    if (!url || /^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(url)) return match;
-    const clean = url.replace(/^\.\//, '');
-    return `url("studio-theme://${encodeURIComponent(themeId)}/${clean
-      .split('/')
-      .map((seg) => encodeURIComponent(seg))
-      .join('/')}")`;
+function themeAssetUrl(themeId, cssDir, rawUrl) {
+  const url = String(rawUrl || '').trim();
+  if (!url || /^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(url)) return null;
+  const clean = url.replace(/^\.\//, '');
+  const resolved = path.posix.normalize(path.posix.join(cssDir || '', clean)).replace(/^\/+/, '');
+  if (!resolved || resolved === '.' || resolved.startsWith('../')) return null;
+  const encodedPath = resolved.split('/').map((seg) => encodeURIComponent(seg)).join('/');
+  return `studio-theme://${encodeURIComponent(themeId)}/${encodedPath}`;
+}
+
+function rewriteThemeUrls(cssText, themeId, cssDir = '') {
+  let output = String(cssText).replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (match, quote, rawUrl) => {
+    const asset = themeAssetUrl(themeId, cssDir, rawUrl);
+    return asset ? `url("${asset}")` : match;
   });
+  output = output.replace(/@import\s+(?!url\()(['"])([^'"]+)\1/gi, (match, quote, rawUrl) => {
+    const asset = themeAssetUrl(themeId, cssDir, rawUrl);
+    return asset ? `@import ${quote}${asset}${quote}` : match;
+  });
+  return output;
 }
 
 async function loadThemeCss(id) {
   const theme = await resolveThemeDir(id);
   if (!theme) throw new Error(`找不到主题：${id}`);
-  const basePath = path.join(theme.dir, theme.file);
+  const basePath = path.join(theme.rootDir, theme.relative);
+  const cssDir = path.join(theme.rootDir, theme.cssDir);
   const layers = [basePath];
-  const baseUser = path.join(theme.dir, 'base.user.css');
-  const themeUser = path.join(theme.dir, `${theme.file.replace(/\.css$/i, '')}.user.css`);
+  const baseUser = path.join(cssDir, 'base.user.css');
+  const themeUser = path.join(cssDir, `${theme.file.replace(/\.css$/i, '')}.user.css`);
   for (const file of [baseUser, themeUser]) {
     try {
       await fs.access(file);
@@ -182,11 +258,11 @@ async function loadThemeCss(id) {
   const chunks = [];
   for (const file of layers) {
     const source = await fs.readFile(file, 'utf8');
-    chunks.push(rewriteThemeUrls(source, id));
+    chunks.push(rewriteThemeUrls(source, id, theme.cssDir));
   }
   return {
     id,
-    name: theme.file.replace(/\.css$/i, ''),
+    name: theme.name,
     source: theme.source,
     css: chunks.join('\n\n')
   };
@@ -213,7 +289,7 @@ function registerThemeProtocol() {
       const theme = await resolveThemeDir(themeId);
       if (!theme) return new Response('theme not found', { status: 404 });
       const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const base = path.resolve(theme.dir);
+      const base = path.resolve(theme.rootDir);
       const target = path.resolve(base, requestPath);
       const relative = path.relative(base, target);
       if (relative.startsWith('..') || path.isAbsolute(relative)) {
@@ -790,6 +866,24 @@ function registerIpc() {
 }
 
 app.whenReady().then(async () => {
+  if (process.argv.includes('--list-themes')) {
+    console.log(JSON.stringify(await listThemes(), null, 2));
+    app.quit();
+    return;
+  }
+  const themeCheckArg = process.argv.find((arg) => arg.startsWith('--theme-check='));
+  if (themeCheckArg) {
+    const id = themeCheckArg.split('=').slice(1).join('=');
+    try {
+      const theme = await resolveThemeDir(id);
+      const loaded = await loadThemeCss(id);
+      console.log(JSON.stringify({ found: !!theme, id, relative: theme?.relative, cssLength: loaded.css.length, hasThemeUrl: loaded.css.includes('studio-theme://') }, null, 2));
+    } catch (error) {
+      console.log(JSON.stringify({ found: false, id, error: error.message }, null, 2));
+    }
+    app.quit();
+    return;
+  }
   registerThemeProtocol();
   await migrateLegacyStudioData();
   await ensureUserThemeDir();
