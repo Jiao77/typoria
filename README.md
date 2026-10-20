@@ -10,7 +10,7 @@
 SHA-256：
 
 ```text
-37495b15d3d7ed8ec2a64ebddce24a89d83c47cb4b9324946125003f28d7523b
+2f86de33fcddc9d1a6e055e4822ddb13e0b49acf2c9aba641f4838408ff83e64
 ```
 
 > 1.0.2：修复 PDF / HTML 导出中的嵌套引用、多级列表缩进与任务勾选状态；补充 MIT 与第三方许可证说明。
@@ -115,6 +115,10 @@ GitHub 源码版内置 `resources/themes`（包含 Pixyll、LaTeX、LaTeX Dark�
 当前兼容范围包括标题、段落、嵌套引用、列表 / 任务、表格、代码块、行内代码、链接、图片、公式、脚注、目录和 Mermaid 图表。列表与任务清单的间距、部分 `>` 直接子代选择器仍可能与 Typora 有细微差异；数学渲染使用 KaTeX 而不是 Typora 的 MathJax，主题中针对 MathJax DOM 的深层选择器不会全部生效。
 
 状态栏右下角的「主题」按钮可以快速切换 Studio 内置主题或应用自己的主题、打开主题文件夹、刷新主题列表。
+
+主题菜单会按磁盘目录结构分组：顶层主题直接显示，文件夹主题折叠为可展开的文件夹，展开后再选择具体主题。
+
+![主题文件夹分组](screenshots/theme-folders.png)
 
 LaTeX 主题（迁移自 Typora 的主题）：
 

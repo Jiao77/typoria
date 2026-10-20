@@ -147,6 +147,7 @@
     theme: 'studio-light',
     themeId: 'studio',
     themes: [],
+    expandedThemeGroups: new Set(),
     settings: {},
     katexCss: '',
     references: {},
@@ -3347,21 +3348,83 @@
     return found ? found.name : id;
   }
 
+  function themeMenuItem(theme, depth = 0) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'popover-item' + (state.themeId === theme.id ? ' is-selected' : '') + (depth ? ' is-child' : '');
+    if (depth) item.style.paddingLeft = `${9 + depth * 14}px`;
+    item.textContent = theme.name;
+    item.title = theme.group
+      ? `主题文件夹：${theme.group}`
+      : theme.source === 'user' ? 'Typora 用户主题' : theme.source === 'bundled' ? '内置 Typora 主题' : '应用内置主题';
+    item.addEventListener('click', () => {
+      applyTheme(theme.id);
+      hidePopovers();
+    });
+    return item;
+  }
+
+  function buildThemeTree(themes) {
+    const root = { themes: [], folders: new Map() };
+    for (const theme of themes) {
+      if (!theme.group) { root.themes.push(theme); continue; }
+      let node = root;
+      let path = '';
+      for (const part of theme.group.split('/').filter(Boolean)) {
+        path = path ? `${path}/${part}` : part;
+        if (!node.folders.has(part)) node.folders.set(part, { name: part, path, themes: [], folders: new Map() });
+        node = node.folders.get(part);
+      }
+      node.themes.push(theme);
+    }
+    return root;
+  }
+
+  function countThemeFolder(node) {
+    let count = node.themes.length;
+    for (const folder of node.folders.values()) count += countThemeFolder(folder);
+    return count;
+  }
+
+  function renderThemeFolder(folder, depth) {
+    const expanded = state.expandedThemeGroups.has(folder.path);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'popover-item popover-folder';
+    button.style.paddingLeft = `${9 + depth * 14}px`;
+    button.title = `主题文件夹：${folder.path}`;
+    const caret = document.createElement('span');
+    caret.className = 'folder-caret';
+    caret.textContent = expanded ? '▾' : '▸';
+    const name = document.createElement('span');
+    name.className = 'folder-name';
+    name.textContent = folder.name;
+    const count = document.createElement('span');
+    count.className = 'folder-count';
+    count.textContent = String(countThemeFolder(folder));
+    button.append(caret, name, count);
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (expanded) state.expandedThemeGroups.delete(folder.path);
+      else state.expandedThemeGroups.add(folder.path);
+      renderThemeMenu();
+    });
+    themeMenu.appendChild(button);
+    if (!expanded) return;
+    for (const theme of folder.themes) themeMenu.appendChild(themeMenuItem(theme, depth + 1));
+    for (const child of [...folder.folders.values()].sort((a, b) => a.name.localeCompare(b.name))) {
+      renderThemeFolder(child, depth + 1);
+    }
+  }
+
   function renderThemeMenu() {
     if (!themeMenu) return;
     themeMenu.innerHTML = '';
-    const all = [...BUILTIN_THEMES, ...(state.themes || [])];
-    for (const theme of all) {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'popover-item' + (state.themeId === theme.id ? ' is-selected' : '');
-      item.textContent = theme.name;
-      item.title = theme.source === 'user' ? 'Typora 用户主题' : theme.source === 'bundled' ? '内置 Typora 主题' : '应用内置主题';
-      item.addEventListener('click', () => {
-        applyTheme(theme.id);
-        hidePopovers();
-      });
-      themeMenu.appendChild(item);
+    for (const theme of BUILTIN_THEMES) themeMenu.appendChild(themeMenuItem(theme));
+    const tree = buildThemeTree(state.themes || []);
+    for (const theme of tree.themes) themeMenu.appendChild(themeMenuItem(theme));
+    for (const folder of [...tree.folders.values()].sort((a, b) => a.name.localeCompare(b.name))) {
+      renderThemeFolder(folder, 0);
     }
     const sep = document.createElement('div');
     sep.className = 'popover-separator';
@@ -3394,6 +3457,14 @@
         : [];
     } catch (error) {
       state.themes = [];
+    }
+    const selected = (state.themes || []).find((theme) => theme.id === state.themeId);
+    if (selected && selected.group) {
+      let path = '';
+      for (const part of selected.group.split('/').filter(Boolean)) {
+        path = path ? `${path}/${part}` : part;
+        state.expandedThemeGroups.add(path);
+      }
     }
     renderThemeMenu();
   }

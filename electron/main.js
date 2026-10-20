@@ -16,6 +16,7 @@ const BUNDLED_THEME_DIR = path.join(ROOT, 'resources', 'themes');
 const captureArg = process.argv.find((arg) => arg.startsWith('--capture='));
 const themeArg = process.argv.find((arg) => arg.startsWith('--theme='));
 const sidebarArg = process.argv.includes('--sidebar');
+const themeMenuArg = process.argv.includes('--theme-menu');
 const scrollArg = process.argv.find((arg) => arg.startsWith('--scroll='));
 const openArg = process.argv.find((arg) => arg.startsWith('--open-file='));
 if (captureArg && !process.argv.includes('--capture-user')) {
@@ -145,10 +146,12 @@ async function findThemeCssFiles(rootDir, currentDir = rootDir, relativeDir = ''
 
 function themeRecordOf(entry, source) {
   const fileName = path.basename(entry.relative);
+  const relativeDir = path.posix.dirname(entry.relative);
   return {
     id: themeIdForRelative(entry.relative),
     name: fileName.replace(/\.css$/i, ''),
     source,
+    group: relativeDir === '.' ? '' : relativeDir,
     relative: entry.relative,
     rootDir: entry.rootDir
   };
@@ -200,7 +203,8 @@ async function listThemes() {
       name: nameCounts.get(theme.name) > 1
         ? `${theme.name} · ${path.basename(path.posix.dirname(theme.relative))}`
         : theme.name,
-      source: theme.source
+      source: theme.source,
+      group: theme.group || ''
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -367,6 +371,10 @@ function createWindow() {
         await mainWindow.webContents.executeJavaScript(
           `(() => { const s = document.getElementById('editor-scroll'); if (s) s.scrollTop = ${Number(scrollArg.split('=').slice(1).join('=')) || 0}; })()`
         );
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      if (themeMenuArg) {
+        await mainWindow.webContents.executeJavaScript("document.getElementById('btn-theme')?.click()");
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
       const image = await mainWindow.webContents.capturePage();
