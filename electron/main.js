@@ -18,7 +18,7 @@ const themeArg = process.argv.find((arg) => arg.startsWith('--theme='));
 const sidebarArg = process.argv.includes('--sidebar');
 const scrollArg = process.argv.find((arg) => arg.startsWith('--scroll='));
 const openArg = process.argv.find((arg) => arg.startsWith('--open-file='));
-if (captureArg) {
+if (captureArg && !process.argv.includes('--capture-user')) {
   // 截图/自动化模式必须把临时 userData 放在应用包外，否则会写入 .app 内部并破坏签名。
   const captureData = path.join(os.tmpdir(), 'typoria-capture');
   mkdirSync(captureData, { recursive: true });
