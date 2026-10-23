@@ -10,7 +10,7 @@
 SHA-256：
 
 ```text
-2f86de33fcddc9d1a6e055e4822ddb13e0b49acf2c9aba641f4838408ff83e64
+3e55eb15d1c866655dc5f5fc870067171aa13425cf143a7f1d69e632af6070ba
 ```
 
 > 1.0.2：修复 PDF / HTML 导出中的嵌套引用、多级列表缩进与任务勾选状态；补充 MIT 与第三方许可证说明。

@@ -64,6 +64,52 @@ await setPlist('CFBundleVersion', 'string', '1');
 await setPlist('CFBundleIconFile', 'string', 'icon.icns');
 await setPlist('NSHighResolutionCapable', 'bool', 'true');
 
+async function configureDocumentAssociations() {
+  const pythonScript = `
+import plistlib, sys
+
+plist_path = sys.argv[1]
+with open(plist_path, 'rb') as f:
+    d = plistlib.load(f)
+
+d['CFBundleDocumentTypes'] = [
+    {
+        'CFBundleTypeName': 'Markdown Document',
+        'CFBundleTypeRole': 'Editor',
+        'LSHandlerRank': 'Owner',
+        'CFBundleTypeIconFile': 'icon.icns',
+        'CFBundleTypeExtensions': [
+            'md', 'markdown', 'mdown', 'mkd', 'mkdn', 'mdwn', 'mdtxt', 'mdtext', 'rmd', 'qmd', 'txt'
+        ],
+        'LSItemContentTypes': [
+            'net.daringfireball.markdown',
+            'public.plain-text',
+            'public.text'
+        ]
+    }
+]
+
+d['UTImportedTypeDeclarations'] = [
+    {
+        'UTTypeIdentifier': 'net.daringfireball.markdown',
+        'UTTypeDescription': 'Markdown Document',
+        'UTTypeIconFile': 'icon.icns',
+        'UTTypeConformsTo': ['public.plain-text'],
+        'UTTypeTagSpecification': {
+            'public.filename-extension': ['md', 'markdown', 'mdown', 'mkd', 'mkdn', 'mdwn'],
+            'public.mime-type': ['text/markdown', 'text/x-markdown']
+        }
+    }
+]
+
+with open(plist_path, 'wb') as f:
+    plistlib.dump(d, f)
+`;
+  await execFileAsync('python3', ['-c', pythonScript, plist]);
+}
+
+await configureDocumentAssociations();
+
 const iconSource = path.join(root, 'assets', 'icon.icns');
 if (await exists(iconSource)) {
   await fs.copyFile(iconSource, path.join(appBundle, 'Contents', 'Resources', 'icon.icns'));

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, dialog, ipcMain, shell, protocol } from 'electron';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { promises as fs, mkdirSync } from 'node:fs';
+import { promises as fs, mkdirSync, existsSync, statSync } from 'node:fs';
 import os from 'node:os';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -96,6 +96,54 @@ async function writeSettings(next) {
 async function updateSettings(patch) {
   const current = await readSettings();
   return writeSettings({ ...current, ...patch });
+}
+
+async function recordRecentFile(target) {
+  if (!target) return [];
+  const settings = await readSettings();
+  const recentFiles = [target, ...(settings.recentFiles || []).filter((item) => item !== target)].slice(0, 12);
+  await updateSettings({ recentFiles });
+  return recentFiles;
+}
+
+let pendingOpenFile = null;
+
+app.on('open-file', (event, filePath) => {
+  event.preventDefault();
+  if (mainWindow && mainWindow.webContents && !mainWindow.webContents.isLoading()) {
+    openFileInWindow(filePath);
+  } else {
+    pendingOpenFile = filePath;
+  }
+});
+
+function getFileFromArgv() {
+  const args = process.argv.slice(1);
+  for (const arg of args) {
+    if (!arg.startsWith('-') && !arg.startsWith('--')) {
+      try {
+        if (existsSync(arg) && statSync(arg).isFile()) {
+          return path.resolve(arg);
+        }
+      } catch { /* 忽略 */ }
+    }
+  }
+  return null;
+}
+
+async function openFileInWindow(filePath) {
+  if (!mainWindow || !mainWindow.webContents) return;
+  try {
+    const content = await fs.readFile(filePath, 'utf8');
+    const payload = { path: filePath, name: path.basename(filePath), content };
+    mainWindow.webContents.send('file:opened', payload);
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    if (!mainWindow.isVisible()) mainWindow.show();
+    mainWindow.focus();
+    await recordRecentFile(filePath);
+  } catch (error) {
+    console.error('打开外部文件失败：', error);
+  }
 }
 
 const THEME_IGNORED_DIRS = new Set(['.git', '.github', 'node_modules', 'screenshots', 'samples', 'plugin', 'plugin-live', 'themes-live', 'vlook', 'fonts', 'assets']);
@@ -385,6 +433,13 @@ function createWindow() {
       return;
     }
     mainWindow.show();
+    if (pendingOpenFile) {
+      const toOpen = pendingOpenFile;
+      pendingOpenFile = null;
+      setTimeout(() => {
+        openFileInWindow(toOpen);
+      }, 300);
+    }
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -844,11 +899,25 @@ function registerIpc() {
   });
 
   ipcMain.handle('recents:add', async (event, target) => {
-    if (!target) return [];
-    const settings = await readSettings();
-    const recentFiles = [target, ...(settings.recentFiles || []).filter((item) => item !== target)].slice(0, 12);
-    await updateSettings({ recentFiles });
-    return recentFiles;
+    return recordRecentFile(target);
+  });
+
+  ipcMain.handle('file:getInitial', async () => {
+    const target = pendingOpenFile || getFileFromArgv();
+    pendingOpenFile = null;
+    if (!target) return null;
+    try {
+      const content = await fs.readFile(target, 'utf8');
+      await recordRecentFile(target);
+      return {
+        path: target,
+        name: path.basename(target),
+        content
+      };
+    } catch (error) {
+      console.error('读取初始文件失败：', error);
+      return null;
+    }
   });
 
   ipcMain.handle('shell:showItem', async (event, target) => {

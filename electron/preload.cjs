@@ -52,6 +52,12 @@ contextBridge.exposeInMainWorld('studio', {
   },
 
   openMarkdown: () => ipcRenderer.invoke('dialog:openMarkdown'),
+  getInitialFile: () => ipcRenderer.invoke('file:getInitial'),
+  onOpenFile: (handler) => {
+    const listener = (event, payload) => handler(payload);
+    ipcRenderer.on('file:opened', listener);
+    return () => ipcRenderer.removeListener('file:opened', listener);
+  },
   readFile: (target) => ipcRenderer.invoke('file:read', target),
   saveMarkdownDialog: (defaultPath) => ipcRenderer.invoke('dialog:saveMarkdown', defaultPath),
   saveFile: (payload) => ipcRenderer.invoke('file:save', payload),

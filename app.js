@@ -5265,8 +5265,20 @@
     if (prefs.sidebar) setSidebarVisible(true);
     else setSidebarVisible(false);
 
+    let initialFile = null;
+    if (window.studio && window.studio.getInitialFile) {
+      try {
+        initialFile = await window.studio.getInitialFile();
+      } catch (error) { /* 忽略 */ }
+    }
+
     let saved = forceFresh ? null : readLocalDoc();
-    if (saved && state.settings.lastFile && (saved.dirty !== true || looksLikeBrokenContainerDraft(saved.md)) && window.studio) {
+    if (initialFile) {
+      saved = { md: initialFile.content, fileName: initialFile.name, documentPath: initialFile.path, dirty: false };
+      if (initialFile.path && window.studio && window.studio.settings) {
+        window.studio.settings.set({ lastFile: initialFile.path });
+      }
+    } else if (saved && state.settings.lastFile && (saved.dirty !== true || looksLikeBrokenContainerDraft(saved.md)) && window.studio) {
       // 旧版本草稿没有 dirty 标记；优先从磁盘恢复，避免旧解析器写坏的草稿继续显示。
       try {
         const payload = await window.studio.readFile(state.settings.lastFile);
@@ -5294,6 +5306,14 @@
 
     if (forceFresh) {
       try { window.history.replaceState(null, '', window.location.pathname); } catch (error) { /* 忽略 */ }
+    }
+
+    if (window.studio && window.studio.onOpenFile) {
+      window.studio.onOpenFile((payload) => {
+        if (!payload) return;
+        if (state.fileDirty && !window.confirm('当前修改尚未保存到文件，仍要打开其他文档吗？')) return;
+        applyOpenedFile(payload, payload.content);
+      });
     }
   }
 
